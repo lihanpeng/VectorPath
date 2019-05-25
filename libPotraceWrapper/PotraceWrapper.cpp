@@ -104,26 +104,26 @@ void graphicsPath_draw(GraphicsPath *dest, potrace_path_t *path) {
     return;
   int *tag = path->curve.tag;
   potrace_dpoint_t(*c)[3] = path->curve.c;
-  // ¿ªÊ¼Ò»¶ÎĞÂµÄÂ·¾¶»æÖÆ
+  // å¼€å§‹ä¸€æ®µæ–°çš„è·¯å¾„ç»˜åˆ¶
   dest->StartFigure();
-  // ×îºóÒ»¶ÎÂ·¾¶µÄÖÕµãÎªµÚÒ»¶ÎÂ·¾¶µÄÆğµã(potracelib.pdf)
+  // æœ€åä¸€æ®µè·¯å¾„çš„ç»ˆç‚¹ä¸ºç¬¬ä¸€æ®µè·¯å¾„çš„èµ·ç‚¹(potracelib.pdf)
   Gdiplus::PointF startPt(c[n - 1][2].x, c[n - 1][2].y);
-  for (int i = 1; i < n; ++i) {
-    // ¸Ã¶ÎÂ·¾¶µÄÆğµã
+  for (int i = 0; i < n; ++i) {//è¿™é‡Œåº”è¯¥ä»0å¼€å§‹å¾ªç¯ï¼Œå¯ä»¥ç”¨åªåŒ…å«ä¸€ä¸ªæ–¹å—çš„å›¾ç‰‡è¿›è¡Œæµ‹è¯•
+    // è¯¥æ®µè·¯å¾„çš„èµ·ç‚¹
     Gdiplus::PointF a;
     if (i == 1)
       a = startPt;
     else
       a = Gdiplus::PointF(c[i - 1][2].x, c[i - 1][2].y);
     switch (tag[i]) {
-      // ÕÛ½Ç
+      // æŠ˜è§’
     case POTRACE_CORNER: {
       Gdiplus::PointF v(c[i][1].x, c[i][1].y);
       Gdiplus::PointF b(c[i][2].x, c[i][2].y);
       dest->AddLine(a, v);
       dest->AddLine(v, b);
     } break;
-      // ±´Èû¶ûÇúÏß
+      // è´å¡å°”æ›²çº¿
     case POTRACE_CURVETO: {
       Gdiplus::PointF u(c[i][0].x, c[i][0].y);
       Gdiplus::PointF w(c[i][1].x, c[i][1].y);
@@ -154,7 +154,7 @@ void potracePath_to_graphicsPath(GraphicsPath *dest, potrace_path_t *path,
 
         while (pathc) {
           if (pathc->sign == '-')
-            graphicsPath_draw(dest, path);
+            graphicsPath_draw(dest, pathc);//è¿™é‡Œåº”è¯¥ä¼ å­è·¯å¾„çš„æŒ‡é’ˆ
           pathc = pathc->sibling;
         }
       }
@@ -206,7 +206,7 @@ bool PotraceWrapper::trace(const cv::Mat *image) {
   pparams->turnpolicy = m_turnpolicy;
   pparams->opttolerance = m_curveTolerance;
   pparams->turdsize = m_turdSize;
-  // Èç¹ûĞèÒªµÃÖª×ª»»½ø¶È,Çë²ÎÔÄpotraceÎÄµµ
+  // å¦‚æœéœ€è¦å¾—çŸ¥è½¬æ¢è¿›åº¦,è¯·å‚é˜…potraceæ–‡æ¡£
   // pparams->progress.callback
 
   potrace_state_t *pstate = potrace_trace(pparams, pbitmap);
